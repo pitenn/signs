@@ -3,6 +3,26 @@ pitenn/signs
 
 As in description - project which is targeting a problem of traffic sign recognition using neural network.
 ----------------------------------------------------------------------------------------------------------
+### Tips ###
+
+You might want to use TensorFlow in version 1.5 if your CPU doesn't support AVX instruction set!
+If so, download TensorFlow 1.5 in your venv. Otherwise your Python interpreter will get SIGKILL
+
+### TODO ###
+*  Because of reasons *I lost* small piece of code at the beginning of the **signs.py** which restricts amount
+of used cores by Python 3 interpreter (keras **goes full ham** when it comes to resources without any restrictions).
+**Sorry for that**
+*  (!) Write some code which will make use of resources available below to actually classify some signs' pictures!
+
+### Resources ###
+
+*  This [link](https://drive.google.com/open?id=1W7cLXCiRc3f3CP4Y-u6s2YqYVaCIgVb8) 
+leads to Google Drive directory within which you can find:
+   *  model.json - Model architecture (already hardcoded in signs.py)
+   *  model.h5 - Weights from taught neural network
+*  Other useful links:
+   *  [Tutorial](https://chsasank.github.io/keras-tutorial.html) - very good!
+   *  [Other resources](https://medium.com/@waleedka/traffic-sign-recognition-with-tensorflow-629dffc391a6)
 
 ### Tutorial: Setting up development environment ###
 In development we are using Python 3.x 
