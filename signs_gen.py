@@ -5,12 +5,19 @@ import tensorflow as tf
 from keras import backend as K
 import glob
 import os
+from keras.models import Sequential
+from keras.layers.core import Dense, Dropout, Activation, Flatten
+from keras.layers.convolutional import Conv2D
+from keras.layers.pooling import MaxPooling2D
+from keras.optimizers import SGD
+from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 
-jobs = 6
+JOBS = 6
 
-config = tf.ConfigProto(intra_op_parallelism_threads=jobs, inter_op_parallelism_threads=jobs,  allow_soft_placement=True, device_count = {'CPU': jobs})
-session = tf.Session(config=config)
-K.set_session(session)
+def configure_usage_of_threads(jobs):
+    config = tf.ConfigProto(intra_op_parallelism_threads=jobs, inter_op_parallelism_threads=jobs,  allow_soft_placement=True, device_count = {'CPU': jobs})
+    session = tf.Session(config=config)
+    K.set_session(session)
 
 NUM_CLASSES = 62
 IMG_SIZE = 100
@@ -64,35 +71,6 @@ def process_and_save_images(root_dir, x_axis_path, y_axis_path):
 
     return X, Y
 
-
-if __name__ == "__main__":
-    root_dir = 'Training/'
-    imgs = []
-    labels = []
-
-    x_axis_filename = "X_AXIS.bin"
-    y_axis_filename = "Y_AXIS.bin"
-
-    X = None
-    Y = None
-
-    if os.path.exists(x_axis_filename) and os.path.exists(y_axis_filename):
-        with open(x_axis_filename, mode="rb") as f:
-            X = load(f)
-        with open(y_axis_filename, mode="rb") as f:
-            Y = load(f)
-    else:
-        X, Y = process_and_save_images(x_axis_filename, y_axis_filename)
-
-
-from keras.models import Sequential
-from keras.layers.core import Dense, Dropout, Activation, Flatten
-from keras.layers.convolutional import Conv2D
-from keras.layers.pooling import MaxPooling2D
-from keras.optimizers import SGD
-K.set_image_data_format('channels_first')
-
-
 def cnn_model():
     model = Sequential()
 
@@ -122,37 +100,54 @@ def cnn_model():
     return model
 
 
-from keras.optimizers import SGD
+if __name__ == "__main__":
+    configure_usage_of_threads(JOBS)
+    root_dir = 'Training/'
+    imgs = []
+    labels = []
 
-model = cnn_model()
+    x_axis_filename = "X_AXIS.bin"
+    y_axis_filename = "Y_AXIS.bin"
 
-# let's train the model using SGD + momentum
-lr = 0.01
-sgd = SGD(lr=lr, decay=1e-6, momentum=0.9, nesterov=True)
-model.compile(loss='categorical_crossentropy',
-              optimizer=sgd,
-              metrics=['accuracy'])
+    X = None
+    Y = None
 
+    if os.path.exists(x_axis_filename) and os.path.exists(y_axis_filename):
+        with open(x_axis_filename, mode="rb") as f:
+            X = load(f)
+        with open(y_axis_filename, mode="rb") as f:
+            Y = load(f)
+    else:
+        X, Y = process_and_save_images(root_dir, x_axis_filename, y_axis_filename)
 
-from keras.callbacks import LearningRateScheduler, ModelCheckpoint
+    K.set_image_data_format('channels_first')
+    model = cnn_model()
 
+    # let's train the model using SGD + momentum
+    lr = 0.01
+    sgd = SGD(lr=lr, decay=1e-6, momentum=0.9, nesterov=True)
+    model.compile(loss='categorical_crossentropy',
+                  optimizer=sgd,
+                  metrics=['accuracy'])
 
-def lr_schedule(epoch):
-    return lr * (0.1 ** int(epoch / 10))
+    def lr_schedule(epoch):
+        return lr * (0.1 ** int(epoch / 10))
 
-batch_size = 32
-epochs = 9
+    batch_size = 32
+    epochs = 9
 
-model.fit(X, Y,
-          batch_size=batch_size,
-          epochs=epochs,
-          validation_split=0.2,
-          callbacks=[LearningRateScheduler(lr_schedule),
-                     ModelCheckpoint('model.h5', save_best_only=True)]
-          )
+    model.fit(X, Y,
+              batch_size=batch_size,
+              epochs=epochs,
+              validation_split=0.2,
+              callbacks=[LearningRateScheduler(lr_schedule),
+                         ModelCheckpoint('model.h5', save_best_only=True)]
+              )
 
-with open("model.json", mode="w") as f:
-    f.write(model.to_json())
-    print("Saved model JSON")
-model.save_weights("model.h5")
-print("Saved model H5 weights.")
+    with open("model.json", mode="w") as f:
+        f.write(model.to_json())
+        print("Saved model JSON")
+    model.save_weights("model.h5")
+
+    model.predict(  )
+    print("Saved model H5 weights.")
