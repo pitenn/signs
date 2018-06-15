@@ -10,6 +10,9 @@ If so, download TensorFlow 1.5 in your venv. Otherwise your Python interpreter w
 
 ### Resources ###
 
+* Used photos for training are from [there](https://btsd.ethz.ch/shareddata/)
+* Training set was [this](https://btsd.ethz.ch/shareddata/BelgiumTSC/BelgiumTSC_Training.zip)
+* Testing set was [this](https://btsd.ethz.ch/shareddata/BelgiumTSC/BelgiumTSC_Testing.zip)
 *  This [link](https://drive.google.com/open?id=1W7cLXCiRc3f3CP4Y-u6s2YqYVaCIgVb8) 
 leads to Google Drive directory within which you can find:
    *  model.json - Model architecture (already hardcoded in signs.py)
