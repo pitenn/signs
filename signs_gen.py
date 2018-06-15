@@ -148,6 +148,4 @@ if __name__ == "__main__":
         f.write(model.to_json())
         print("Saved model JSON")
     model.save_weights("model.h5")
-
-    model.predict(  )
     print("Saved model H5 weights.")
