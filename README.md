@@ -1,7 +1,7 @@
 pitenn/signs
 ============
 
-As in description - project which is targeting a problem of traffic sign recognition using neural network.
+As in description - [project](https://docs.google.com/document/d/1XvBuPaigL6Po3DGuKHUrnLvLroEHqX7B4UzFjWUY19I/edit) which is targeting a problem of traffic sign recognition using neural network.
 ----------------------------------------------------------------------------------------------------------
 ### Tips ###
 
